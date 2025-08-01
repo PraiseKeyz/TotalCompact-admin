@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { ArchiveIcon, UploadIcon, TrashIcon, UserIcon } from "lucide-react";
+import { ArchiveIcon, UploadIcon, TrashIcon } from "lucide-react";
 import { Link } from "react-router-dom";
+import axios from "axios";
 
 // Dummy data
 const recentProjects = [
@@ -18,32 +19,49 @@ const recentProjects = [
   },
 ];
 
-const activityLogs = [
-  {
-    time: "10:30 AM",
-    action: "Uploaded Project",
-    project: "Landing Page Design",
-  },
-  {
-    time: "09:22 AM",
-    action: "Deleted Project",
-    project: "Outdated Icons",
-  },
-];
+
 
 const DashboardOverview = () => {
-  const [totalProjects, setTotalProjects] = useState(48);
-  const [recentUploads, setRecentUploads] = useState(5);
-  const [deletedProjects, setDeletedProjects] = useState(3);
+  const [totalProjects, setTotalProjects] = useState("");
+  const [recentUploads, setRecentUploads] = useState("");
+  const [deletedProjects, setDeletedProjects] = useState("");
+
+  const API_BASE_URL = import.meta.env.VITE_APP_API_URL;
+
+  useEffect(() => {
+    const fetchProject = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await axios.get(`${API_BASE_URL}/api/v1/projects`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const data = response.data.data
+        setTotalProjects(data.length);
+        setDeletedProjects("3")
+        const now = new Date();
+const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+
+const recentUploadsCount = data.filter((post: any) => {
+  const createdDate = new Date(post.createdAt);
+  return createdDate > oneDayAgo;
+}).length;
+setRecentUploads(recentUploadsCount)
+      } catch (error) {
+        console.error("Error fetching user:", error);
+      }
+    };
+    fetchProject();
+  }, [])
 
   return (
     <div className="py-6 px-4 lg:px-16 space-y-10">
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         <SummaryCard title="Total Projects" value={totalProjects} icon={<ArchiveIcon className="w-full h-6" />} />
         <SummaryCard title="Recent Uploads" value={recentUploads} icon={<UploadIcon className="w-full h-6" />} />
         <SummaryCard title="Deleted Projects" value={deletedProjects} icon={<TrashIcon className="w-full h-6" />} />
-        <SummaryCard title="Admin" value="You" icon={<UserIcon className="w-6 h-6" />} />
       </div>
 
       {/* Recent Projects */}
@@ -68,19 +86,6 @@ const DashboardOverview = () => {
         </div>
       </div>
 
-      {/* Upload Logs */}
-      <div>
-        <h2 className="text-xl font-semibold mb-4">Upload Activity</h2>
-        <ul className="divide-y divide-gray-200">
-          {activityLogs.map((log, index) => (
-            <li key={index} className="py-2 flex justify-between text-sm">
-              <span className="text-gray-600">{log.time}</span>
-              <span>{log.action}</span>
-              <span className="text-blue-600">{log.project}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
 
       {/* Quick Action Buttons */}
       <div className="flex flex-wrap gap-4 pt-6">

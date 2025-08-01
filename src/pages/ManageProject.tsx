@@ -70,8 +70,9 @@ const ManageProjects = () => {
         {projects.map((project) => (
           <div key={project._id} className="border rounded-lg p-4 shadow-sm">
             <img
-              src={`http://localhost:5000/${project.images[0]?.url.replace("\\", "/")}`}
+              src={`${API_BASE_URL}/${project.images[0]?.url.replace(/\\/g, '/')}`}
               alt={project.name}
+              crossOrigin="anonymous"
               className="h-40 w-full object-cover rounded mb-2"
             />
             <h3 className="font-semibold text-lg">{project.name}</h3>
@@ -127,7 +128,8 @@ const ManageProjects = () => {
               {selectedProject?.images.map((img) => (
                 <img
                   key={img._id}
-                  src={`http://localhost:5000/${img.url.replace("\\", "/")}`}
+                  src={`http://localhost:3000/${img.url.replace("\\", "/")}`}
+                  crossOrigin="anonymous"
                   alt="project"
                   className="rounded object-cover h-32 w-full"
                 />
