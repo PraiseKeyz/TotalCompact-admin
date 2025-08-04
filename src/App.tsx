@@ -6,6 +6,7 @@ import Dashboard from "./pages/Dashboard";
 import UploadProject from "./pages/UploadProject";
 import ManageProject from "./pages/ManageProject";
 import DashboardOverview from "./pages/DashboardOverview";
+import ContactManagement from "./pages/ContactManagement";
 import "./App.css";
 
 function App() {
@@ -26,6 +27,7 @@ function App() {
             <Route index element={<DashboardOverview />} />
             <Route path="upload" element={<UploadProject />} />
             <Route path="manage" element={<ManageProject />} />
+            <Route path="contacts" element={<ContactManagement />} />
           </Route>
 
           {/* <Route path='*' element={<NotFound />} /> */}
